@@ -1,5 +1,6 @@
 #This is the M1S3 inventory 
 
+
 inventory = []
 
 def menu():
@@ -8,17 +9,20 @@ def menu():
     Uses a while loop to keep the program running and if/elif/else
     to route each option to the correct function.
     """
-    while True: 
+    while True:  
         print("~"*23)
         print("MENU INVENTORY")
         print("~"*23)
         print("1.Add product")
         print("2.Show inventory")
-        print("3.Calculate stats")
-        print("4.Exit")
+        print("3.Search product")
+        print("4.Update product")
+        print("5.Delete product")
+        print("6.Calculate stats")
+        print("7.Exit")
         print("~"*23)
 
-        option = input("Choose an option:1.Add product, 2.Show inventory, 3.Calculate stats, 4.Exit ").lower()
+        option = input("Choose an option:1.Add product, 2.Show inventory, 3.Search product, 4.Update product, 5.Delete product, 6.Calculate stats, 7.Exit ").lower()
 
         # Route to the correct function based on user input
 
@@ -29,11 +33,24 @@ def menu():
             show_inventory()
 
         elif option == "3":
-            calculate_stats()
+            name = input("Product name to search: ")
+            product = search_product(name)
+            if product:
+                print(f"Product found: {product}")
+            else:
+                print("Product not found")
         
         elif option == "4":
+            update_product()
+        
+        elif option == "5":
+            delete_product()
+        
+        elif option == "6":
+            calculate_stats()
+        
+        elif option == "7":
         # Exit the loop and end the program
-
             print("Leaving the program")
             break
 
@@ -82,13 +99,14 @@ def add_product():
     product = {
         "name": name,
         "price":price,
-        "amount": amount,
+        "amount": amount 
     }
 
     inventory.append(product)
     print("The product was added")
 
 def show_inventory():
+    
     """
     Displays all products currently in the inventory.
     Uses a for loop to iterate over each product dictionary.
@@ -109,6 +127,57 @@ def show_inventory():
         print(f"Amount: {products['amount']}")
         print(f"~"*23)
 
+def search_product(name):
+    for product in inventory:
+        if product["name"].lower() == name.lower():
+            return product
+    return None
+
+def update_product():
+    name = input("Product name to update: ")
+    product = search_product(name)
+
+    if product is None:
+        print("Product not found")
+        return
+
+while True:
+    try:  # Intenta ejecutar el bloque de código
+        new_price = float(input("New price: "))  # Convierte el input a decimal
+        if new_price < 0:
+            print("Error, negative numbers cannot be entered.")
+        else:
+            break
+    except:
+        print("Error, the price must be a decimal number (Like: 1500.50).")
+    
+while True:
+    try:  # Intenta ejecutar el bloque de código
+        new_amount = int(input("New quantity: "))  # Convierte el input a entero
+        if new_amount < 0:
+            print("Error, add a positive amount.")
+        else:
+            break
+    except:
+        print("Error, the quantity must be a whole number (like: 5).")
+
+
+product["price"] = new_price
+product["amount"] = new_amount
+
+print("Product updated")
+
+def delete_product():
+    name = input("Product name to delete: ")
+    product = search_product(name)
+
+    if product is None:
+        print("Product not found")
+        return
+
+    inventory.remove(product)
+    print("Product deleted")
+
 def calculate_stats():
     """
     Calculates and displays two statistics from the inventory:
@@ -123,25 +192,25 @@ def calculate_stats():
         print("No stock available")
         return
     
-    cumulative_total = 0
+    total_value = 0
     total_units = 0
 
-    for products in inventory:
-        price = products['price']
-        amount = products['amount']
+    for product in inventory:
+        total_value += product['price'] * product['amount']
+        total_units += product['amount'] 
 
-        cumulative_total += price * amount
-        total_units += amount
-   
-    # Those are the results
+    most_expensive = max(inventory, key=lambda x: x["price"])    
+    highest_stock = max(inventory, key=lambda x: x["amount"])
+
+    # Those are the results 
 
     print("~"*23)
-    print(f"Total inventory value: {cumulative_total:.2f}$")
-    print(f"Registered products: {total_units}")
+    print(f"Total inventory value: {total_value:.2f}$")
+    print(f"Total units: {total_units}")
+    print(f"Most expensive product: {most_expensive['name']}")
+    print(f"Highest stock product: {highest_stock['name']}")
     print("")
-    print("~"*23)
+    print("~"*23) 
 
-if __name__ == "__main__":
-    menu()
-
-        
+if __name__ == "__main__": 
+    menu()  # Start the program by calling the menu function when the script is run directly
